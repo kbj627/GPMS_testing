@@ -17,7 +17,7 @@ class Test_Login(BaseTest):
         cls.del_WebDriver(cls)
 
     def test_login(self):
-        login = Login(self.get_WebDriver())
+        login = Login()
         login.get_login_page()
         login.send_keys_id('admin4')
         login.send_keys_pw('Qwer12#$')
