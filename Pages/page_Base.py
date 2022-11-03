@@ -1,3 +1,4 @@
+import sys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -6,19 +7,21 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-
-class BasePage:
-    def __init__(self):
+class PageBase:
+    def __init__(self, logger):
+        self.logger = logger
         self.init_Webdriver()
 
     def __del__(self):
         self.del_WebDriver()
 
-    def init_Webdriver(self):
+    def init_Webdriver(self, pageLoadingWaitTime=10):
+        # pageLoadingWaitTime : 페이지 로딩을 기다리는 시간
         try:
             chrome_options = webdriver.ChromeOptions()
             #chrome_options.add_argument("--headless")
             self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            self.driver.implicitly_wait(pageLoadingWaitTime)
         except Exception as e:
             print(e)
 
@@ -32,6 +35,21 @@ class BasePage:
     def get_WebDriver(self):
         if not self.driver == None:
             return self.driver
+
+    def check_Page(self, url:str):
+        result = url in self.driver.current_url
+        currentFunc = sys._getframe(0).f_code.co_name
+        calledFunc = sys._getframe(1).f_code.co_name
+
+        self.logger.info('[{}] Function called [{}]'.format(calledFunc, currentFunc))
+        self.logger.info('[{}] Result : {}'.format(currentFunc, result))
+        self.logger.info('[{}] Current URL : {}'.format(currentFunc, self.driver.current_url))
+        self.logger.info('[{}] Assert URL : {}'.format(currentFunc, url))
+
+        return result
+
+    def check_message(self, locator, text, waitTime=10):
+        return self.find_element(locator, waitTime).text == text
 
     def find_element(self, locator, waitTime=10):
         """ 엘리먼트 찾기 """

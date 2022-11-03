@@ -1,27 +1,47 @@
-import logging
+import logging, pytest
 from TestCases.test_Base import BaseTest
-from Pages.page_Login import Login
+from Pages.page_Login import PageLogin
 
 
 class Test_Login(BaseTest):
-    path_gpms_Home = '/gpms/home#/'
+    url_LoginPage = 'https://test-gpms1.tmaxos.com/gpms/login'
+    url_HomePage = 'https://test-gpms1.tmaxos.com/gpms/home#'
+    login_id = 'admin4'
+    login_pw = 'Qwer12#$'
 
     @classmethod
     def setup_class(cls):
-        cls.set_gpms_Domain(cls, url_gpms_Domain='https://test-gpms.gooroom.kr')
         cls.init_Logger(cls, logLevel=logging.INFO)
-        cls.init_Webdriver(cls)
 
     @classmethod
     def teardown_class(cls):
-        cls.del_WebDriver(cls)
+        pass
 
-    def test_login(self):
-        login = Login()
-        login.get_login_page()
-        login.send_keys_id('admin4')
-        login.send_keys_pw('Qwer12#$')
-        login.click_login_btn()
+    def test_login_Success(self):
+        page = PageLogin(self.logger)
+        page.move_login_page(self.url_LoginPage)
+        page.input_textfield_id(self.login_id)
+        page.input_textfield_pw(self.login_pw)
+        page.click_login_btn()
         
-        assert self.url_compare(path=self.path_gpms_Home)
+        assert page.check_Page(url=self.url_HomePage)
 
+    @pytest.mark.skip(reason='pause')
+    def test_login_Fail_InvalidID(self):
+        page = PageLogin(self.logger)
+        page.move_login_page(self.url_LoginPage)
+        page.input_textfield_id(self.login_id + 'invalidID')
+        page.input_textfield_pw(self.login_pw)
+        page.click_login_btn()
+        
+        assert page.check_login_message('계정 정보가 잘못 되었습니다.')
+
+    @pytest.mark.skip(reason='pause')
+    def test_login_Fail_InvalidPW(self):
+        page = PageLogin(self.logger)
+        page.move_login_page(self.url_LoginPage)
+        page.input_textfield_id(self.login_id)
+        page.input_textfield_pw(self.login_pw + 'invalidPW')
+        page.click_login_btn()
+
+        assert page.check_login_message('계정 정보가 잘못 되었습니다.')

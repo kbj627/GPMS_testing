@@ -1,22 +1,28 @@
-from Pages.page_Base import BasePage
+from Pages.page_Base import PageBase
 from selenium.webdriver.common.by import By
 
 
-class Login(BasePage):
+class PageLogin(PageBase):
     textfield_id = (By.NAME, 'userId')
     textfield_pw = (By.NAME, 'userPassword')
-    button_login = (By.NAME, 'submit')
+    #button_login = (By.NAME, 'submit')
+    button_login = (By.XPATH, '//input[@value="로그인"]')
+    message_login_failed = (By.XPATH, '/html/body/div/div/form/p')
 
-    login_url = 'https://test-gpms.gooroom.kr/gpms/login'
+    def __init__(self, logger):
+        super().__init__(logger)
 
-    def get_login_page(self):
-        self.move_url(self.login_url)
+    def move_login_page(self, url):
+        self.move_url(url)
 
-    def send_keys_id(self, id):
+    def input_textfield_id(self, id):
         self.input_textfield(self.textfield_id, id)
 
-    def send_keys_pw(self, pw):
+    def input_textfield_pw(self, pw):
         self.input_textfield(self.textfield_pw, pw)
 
     def click_login_btn(self):
         self.click_element(self.button_login)
+
+    def check_login_message(self, text):
+        return self.check_message(self.message_login_failed, text)
