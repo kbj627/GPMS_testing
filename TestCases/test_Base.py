@@ -3,7 +3,8 @@ from logging.handlers import TimedRotatingFileHandler
 
 
 class BaseTest:
-    def init_Logger(self, logLevel = logging.DEBUG):
+    #TestCase를 Page단위로 구분하여 기록하기 위해 Logger를 TestCase Base 클래스에 위치
+    def init_Logger(self, logLevel = logging.DEBUG): #Logger를 초기화한다.
         cur_os = platform.system()
         called = sys._getframe(1).f_code.co_name
         if cur_os == 'Windows':

@@ -1,4 +1,6 @@
 import sys
+from logging import Logger
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -8,20 +10,19 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 class PageBase:
-    def __init__(self, logger):
-        self.logger = logger
+    def __init__(self):
         self.init_Webdriver()
 
     def __del__(self):
         self.del_WebDriver()
 
-    def init_Webdriver(self, pageLoadingWaitTime=10):
+    def init_Webdriver(self):
         # pageLoadingWaitTime : 페이지 로딩을 기다리는 시간
         try:
             chrome_options = webdriver.ChromeOptions()
             #chrome_options.add_argument("--headless")
             self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-            self.driver.implicitly_wait(pageLoadingWaitTime)
+            self.set_PageLoadingTime(10)
         except Exception as e:
             print(e)
 
@@ -35,16 +36,19 @@ class PageBase:
     def get_WebDriver(self):
         if not self.driver == None:
             return self.driver
+    
+    def set_PageLoadingTime(self, time:int):
+        self.driver.implicitly_wait(time)
 
-    def check_Page(self, url:str):
+    def check_Page(self, url:str, logger:Logger):
         result = url in self.driver.current_url
         currentFunc = sys._getframe(0).f_code.co_name
         calledFunc = sys._getframe(1).f_code.co_name
 
-        self.logger.info('[{}] Function called [{}]'.format(calledFunc, currentFunc))
-        self.logger.info('[{}] Result : {}'.format(currentFunc, result))
-        self.logger.info('[{}] Current URL : {}'.format(currentFunc, self.driver.current_url))
-        self.logger.info('[{}] Assert URL : {}'.format(currentFunc, url))
+        logger.debug('[{}] Function called [{}]'.format(calledFunc, currentFunc))
+        logger.debug('[{}] Result : {}'.format(currentFunc, result))
+        logger.debug('[{}] Current URL : {}'.format(currentFunc, self.driver.current_url))
+        logger.debug('[{}] Assert URL : {}'.format(currentFunc, url))
 
         return result
 

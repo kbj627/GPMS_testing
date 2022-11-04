@@ -4,8 +4,8 @@ from Pages.page_Login import PageLogin
 
 
 class Test_Login(BaseTest):
-    url_LoginPage = 'https://test-gpms1.tmaxos.com/gpms/login'
-    url_HomePage = 'https://test-gpms1.tmaxos.com/gpms/home#'
+    url_LoginPage = 'https://test-gpms.tmaxos.com/gpms/login'
+    url_HomePage = 'https://test-gpms.tmaxos.com/gpms/home#'
     login_id = 'admin4'
     login_pw = 'Qwer12#$'
 
@@ -18,17 +18,17 @@ class Test_Login(BaseTest):
         pass
 
     def test_login_Success(self):
-        page = PageLogin(self.logger)
+        page = PageLogin()
         page.move_login_page(self.url_LoginPage)
         page.input_textfield_id(self.login_id)
         page.input_textfield_pw(self.login_pw)
         page.click_login_btn()
         
-        assert page.check_Page(url=self.url_HomePage)
+        assert page.check_Page(url=self.url_HomePage, logger=self.logger)
 
     @pytest.mark.skip(reason='pause')
     def test_login_Fail_InvalidID(self):
-        page = PageLogin(self.logger)
+        page = PageLogin()
         page.move_login_page(self.url_LoginPage)
         page.input_textfield_id(self.login_id + 'invalidID')
         page.input_textfield_pw(self.login_pw)
@@ -38,7 +38,7 @@ class Test_Login(BaseTest):
 
     @pytest.mark.skip(reason='pause')
     def test_login_Fail_InvalidPW(self):
-        page = PageLogin(self.logger)
+        page = PageLogin()
         page.move_login_page(self.url_LoginPage)
         page.input_textfield_id(self.login_id)
         page.input_textfield_pw(self.login_pw + 'invalidPW')

@@ -9,9 +9,6 @@ class PageLogin(PageBase):
     button_login = (By.XPATH, '//input[@value="로그인"]')
     message_login_failed = (By.XPATH, '/html/body/div/div/form/p')
 
-    def __init__(self, logger):
-        super().__init__(logger)
-
     def move_login_page(self, url):
         self.move_url(url)
 
